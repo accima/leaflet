@@ -1,0 +1,151 @@
+<!DOCTYPE html><html>
+<head>
+	<meta charset=utf-8 />
+	<title>Example Leaflet</title>
+	<meta name="viewport" content= "width=device-width, initial-scale=1.0" http-equiv="content-type" content="text/html" charset="UTF-8" />
+	
+	<!--Leaflet 1.0.2-->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+	
+	<!--jQuery-->
+	<link rel="stylesheet" type="text/css" href="jquery/jquery-ui-1.12.1.css">
+	<link rel="stylesheet" type="text/css" href="jquery/miniColors/jquery.minicolors.css">
+	
+	<!--OWN-->	
+    <style>
+      .map {
+        height: 600px;
+        width: 600px;
+		float: left;
+      }
+	  .TR3 {
+        height: 600px;
+        width: 600px;
+		float:left;
+      }
+	  .tools{
+		font: 0.7em verdana;
+	  }
+    </style>
+	
+	<!--Leaflet 1.0.2-->
+	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+	
+	<!--jQuery-->
+	<script type="text/javascript" src="jquery/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript" src="jquery/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="jquery/miniColors/jquery.minicolors.min.js"></script>
+	
+	<!--TR3-->
+	<script type="text/javascript" src="TR3-min/unic.js"></script>
+	
+	<!--Plugin Proj4Leaflet-->
+	<script src="proj4js/proj4-compressed.js"></script>
+    <script src="proj4js/proj4leaflet.js"></script>
+	
+</head>  
+<body>
+   
+	<div id ="map" class="map"> </div>
+	<div id="TR3" class="TR3"></div>
+	<div id="tools" class="tools" ></div>
+	<script>
+		
+		// Obtención del CRS EPSG:25830.
+        var crs = new L.Proj.CRS('EPSG:25830',
+			 '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs', //http://spatialreference.org/ref/epsg/25830/proj4/
+            {
+                resolutions: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5],
+				origin: [-1500000,5000000],
+				//resolutions: [13671.875,6835.9375,3417.96875,1708.984375,854.4921875,427.24609375,213.623046875,106.8115234375,53.40576171875,26.702880859375,13.3514404296875,6.67572021484375,3.337860107421875,1.6689300537109375,0.8344650268554688,0.4172325134277344,0.2086162567138672,0.1043081283569336,0.0521540641784668,0.0260770320892334,0.0130385160446167,0.00651925802230835,0.003259629011154175,0.0016298145055770874,0.0008149072527885437,0.00040745362639427185,0.00020372681319713593,0.00010186340659856796,0.00005093170329928398,0.00002546585164964199,0.000012732925824820995,0.000006366462912410498,0.000003183231456205249,0.0000015916157281026244,7.958078640513122e-7,3.979039320256561e-7,1.9895196601282805e-7,9.947598300641403e-8,4.973799150320701e-8,2.4868995751603507e-8,1.2434497875801753e-8,6.217248937900877e-9,3.1086244689504383e-9]
+
+            });
+		
+		var map = new L.map('map',{
+			crs: crs,
+			center: [40, -4],
+			zoom: 1
+		}).on('moveend', setTR3);
+
+		var layer = new L.tileLayer.wms("http://www.ign.es/wms-inspire/mapa-raster",{
+			layers: 'mtn_rasterizado',
+			crs: crs,
+			format: 'image/jpeg',
+			crossOrigin: 'anonymous',
+			continuousWorld: true,
+			attribution: '© Instituto Geográfico Nacional de España'
+		}).addTo(map).on('load',setTR3);
+
+		/*var layer = new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			//maxZoom: 18,
+			crs: crs,
+			continuousWorld: true,
+			crossOrigin: 'anonymous',
+			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+		}).addTo(map).on('load',setTR3);*/
+		
+		
+function setTR3() {
+	map.getBounds().toBBoxString();
+	/*
+	var bbox = map.getView().calculateExtent(map.getSize());
+	var code = map.getView().getProjection().getCode();
+
+			
+	var desty = document.getElementById('TR3');
+	var ori = document.getElementsByTagName('CANVAS')[0];*/
+			
+	/*var oriCtx = ori.getContext("2d");
+	//draw a red box
+	oriCtx.fillStyle="#FF0000";
+	oriCtx.fillRect(100,100,300,300);
+	var img = new Image;
+	img.src = ori.toDataURL();*/
+		
+	/*TR3.setStart(ori, desty, bbox, code, bbox);*/
+}
+
+function refresh(){
+	
+	var layers = this.map.getLayersBy("visibility", true);
+	var layer = layers[layers.length-1];
+	
+	var bboxBound = layer.getTilesBounds();
+	var bbox = bboxBound.toBBOX().split(',');
+	
+	var zoneBound = map.getExtent();
+	var zone = zoneBound.toBBOX().split(',');
+	
+	var cvsAuxW = layer.grid[0].length*layer.tileSize.w;
+	var cvsAuxH = layer.grid.length*layer.tileSize.h;
+	
+	var imgTop0 = layer.grid[0][0].position.y;
+	var imgLeft0 = layer.grid[0][0].position.x;
+	
+	//var canvasAuxImg = document.getElementById('canvasAuxImg');
+	var canvasAuxImg = document.createElement('CANVAS');
+	canvasAuxImg.id = 'canvasAuxImg';
+	canvasAuxImg.style.display = 'none';
+	canvasAuxImg.setAttribute('width',cvsAuxW);
+	canvasAuxImg.setAttribute('height',cvsAuxH);
+	canvasAuxImgCtx = canvasAuxImg.getContext("2d");
+	
+	
+	for(i=0 ; i<layer.grid.length ; i++){
+		for(j=0 ; j<layer.grid[i].length ; j++){
+			var imgTile = layer.grid[i][j].imgDiv;
+			var imgTopAct = layer.grid[i][j].position.y;
+			var imgLeftAct = layer.grid[i][j].position.x;
+			
+			if(imgTile && imgTile.naturalWidth && typeof(imgTile.naturalWidth) != "undefined" && imgTile.naturalWidth != 0 && layer.grid[i][j].imageReloadAttempts <= OpenLayers.IMAGE_RELOAD_ATTEMPTS){
+				//imgTile.src = 'img/tileTransparent.png';
+				canvasAuxImgCtx.drawImage(imgTile, 0, 0, layer.tileSize.w, layer.tileSize.h, imgLeftAct - imgLeft0, imgTopAct - imgTop0, layer.tileSize.w, layer.tileSize.h);
+			}
+		}
+	}
+};
+
+
+	</script>
+	</body> 
+</html> 
