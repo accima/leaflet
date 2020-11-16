@@ -37,7 +37,7 @@
 	<script type="text/javascript" src="jquery/miniColors/jquery.minicolors.min.js"></script>
 	
 	<!--TR3-->
-	<script type="text/javascript" src="TR3-min/unic.js"></script>
+	<script type="text/javascript" src="http://terre3.es/API/TR3.js"></script>
 	
 	<!--Plugin Proj4Leaflet-->
 	<script src="proj4js/proj4-compressed.js"></script>
@@ -76,9 +76,9 @@
 			attribution: '© Instituto Geográfico Nacional de España'
 		}).addTo(map).on('load',setTR3);
 
-		/*var layer = new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		/*var layer = new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			//maxZoom: 18,
-			crs: crs,
+			//crs: crs,
 			continuousWorld: true,
 			crossOrigin: 'anonymous',
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
