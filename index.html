@@ -2,7 +2,7 @@
 <head>
 	<meta charset=utf-8 />
 	<title>Example Leaflet</title>
-	<meta name="viewport" content= "width=device-width, initial-scale=1.0" http-equiv="content-type" content="text/html" charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" http-equiv="content-type" content="text/html" charset="UTF-8" />
 	
 	<!--Leaflet 1.0.2-->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -29,7 +29,7 @@
     </style>
 	
 	<!--Leaflet 1.0.2-->
-	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+	<script type="text/javascript" src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 	
 	<!--jQuery-->
 	<script type="text/javascript" src="jquery/jquery-3.4.1.min.js"></script>
@@ -40,8 +40,11 @@
 	<script type="text/javascript" src="https://terre3.es/API/TR3.js"></script>
 	
 	<!--Plugin Proj4Leaflet-->
-	<script src="proj4js/proj4-compressed.js"></script>
-    <script src="proj4js/proj4leaflet.js"></script>
+	<script type="text/javascript" src="proj4js/proj4-compressed.js"></script>
+    <script type="text/javascript" src="proj4js/proj4leaflet.js"></script>
+	
+	<!--html2canvas-->
+	<script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 	
 </head>  
 <body>
@@ -53,7 +56,7 @@
 		
 		// Obtención del CRS EPSG:25830.
         var crs = new L.Proj.CRS('EPSG:25830',
-			 '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs', //http://spatialreference.org/ref/epsg/25830/proj4/
+			 '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs ', //http://spatialreference.org/ref/epsg/25830/proj4/
             {
                 resolutions: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5],
 				origin: [-1500000,5000000],
@@ -65,7 +68,7 @@
 			crs: crs,
 			center: [40, -4],
 			zoom: 1
-		}).on('moveend', setTR3);
+		}).on( 'moveend', setTR3 );
 
 		var layer = new L.tileLayer.wms("http://www.ign.es/wms-inspire/mapa-raster",{
 			layers: 'mtn_rasterizado',
@@ -74,7 +77,8 @@
 			crossOrigin: 'anonymous',
 			continuousWorld: true,
 			attribution: '© Instituto Geográfico Nacional de España'
-		}).addTo(map).on('load',setTR3);
+		}).addTo(map).on( 'load', setTR3 );
+		
 
 		/*var layer = new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			//maxZoom: 18,
@@ -84,67 +88,45 @@
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
 		}).addTo(map).on('load',setTR3);*/
 		
+		TR3.setLoader( 'TR3-min/' );
+		document.getElementById('tools').innerHTML = TR3.setPanel();
+		
+		$( "#tools" ).dialog({position: { my: "right top", at: "right top", of: window },width: 215});
 		
 function setTR3() {
-	map.getBounds().toBBoxString();
-	/*
-	var bbox = map.getView().calculateExtent(map.getSize());
-	var code = map.getView().getProjection().getCode();
-
-			
-	var desty = document.getElementById('TR3');
-	var ori = document.getElementsByTagName('CANVAS')[0];*/
-			
-	/*var oriCtx = ori.getContext("2d");
-	//draw a red box
-	oriCtx.fillStyle="#FF0000";
-	oriCtx.fillRect(100,100,300,300);
-	var img = new Image;
-	img.src = ori.toDataURL();*/
-		
-	/*TR3.setStart(ori, desty, bbox, code, bbox);*/
-}
-
-function refresh(){
-	
-	var layers = this.map.getLayersBy("visibility", true);
-	var layer = layers[layers.length-1];
-	
-	var bboxBound = layer.getTilesBounds();
-	var bbox = bboxBound.toBBOX().split(',');
-	
-	var zoneBound = map.getExtent();
-	var zone = zoneBound.toBBOX().split(',');
-	
-	var cvsAuxW = layer.grid[0].length*layer.tileSize.w;
-	var cvsAuxH = layer.grid.length*layer.tileSize.h;
-	
-	var imgTop0 = layer.grid[0][0].position.y;
-	var imgLeft0 = layer.grid[0][0].position.x;
-	
-	//var canvasAuxImg = document.getElementById('canvasAuxImg');
-	var canvasAuxImg = document.createElement('CANVAS');
-	canvasAuxImg.id = 'canvasAuxImg';
-	canvasAuxImg.style.display = 'none';
-	canvasAuxImg.setAttribute('width',cvsAuxW);
-	canvasAuxImg.setAttribute('height',cvsAuxH);
-	canvasAuxImgCtx = canvasAuxImg.getContext("2d");
-	
-	
-	for(i=0 ; i<layer.grid.length ; i++){
-		for(j=0 ; j<layer.grid[i].length ; j++){
-			var imgTile = layer.grid[i][j].imgDiv;
-			var imgTopAct = layer.grid[i][j].position.y;
-			var imgLeftAct = layer.grid[i][j].position.x;
-			
-			if(imgTile && imgTile.naturalWidth && typeof(imgTile.naturalWidth) != "undefined" && imgTile.naturalWidth != 0 && layer.grid[i][j].imageReloadAttempts <= OpenLayers.IMAGE_RELOAD_ATTEMPTS){
-				//imgTile.src = 'img/tileTransparent.png';
-				canvasAuxImgCtx.drawImage(imgTile, 0, 0, layer.tileSize.w, layer.tileSize.h, imgLeftAct - imgLeft0, imgTopAct - imgTop0, layer.tileSize.w, layer.tileSize.h);
+	setTimeout(function(){
+		html2canvas(document.querySelector("#map"), {
+			useCORS: true,
+			ignoreElements: function( element ) {
+				/*Remove all elements with class="MyClassNameHere" or 'MyElementIdHere' == element.id*/
+				if( 'imgErrTR3evt' == element.id ) {
+					return true;
+				}
+				if( element.classList.contains( 'leaflet-control-container' ) ) {
+					return true;
+				}
 			}
-		}
-	}
-};
-
+		}).then(
+			function(ori) {
+					/*var oriCtx = ori.getContext("2d");
+					//draw a red box
+					oriCtx.fillStyle="#FF0000";
+					oriCtx.fillRect(100,100,300,300);
+					var img = new Image;
+					img.src = ori.toDataURL();*/
+						
+					var bbox = map.getBounds();
+					var desty = document.getElementById('TR3');
+					
+					var c1_25830 = proj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ','+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs ', [ bbox.getWest(), bbox.getSouth() ]);
+					var c2_25830 = proj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ','+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs ', [ bbox.getEast(), bbox.getNorth() ]);
+					
+					TR3.setStart(ori, desty, [c1_25830[0],c1_25830[1],c2_25830[0],c2_25830[1]], 'EPSG:25830');
+				
+			}
+		);
+	}, 1000);
+}
 
 	</script>
 	</body> 
