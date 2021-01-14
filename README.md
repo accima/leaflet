@@ -1,5 +1,5 @@
 # leaflet
-Integración sencilla TR3 sobre Leaflet - 34%
+Integración sencilla TR3 sobre Leaflet
 
 ## Demo en vivo
 http://terre3.es/dev/example/leaflet/
