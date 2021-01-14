@@ -2,7 +2,7 @@
 <head>
 	<meta charset=utf-8 />
 	<title>Example Leaflet</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" http-equiv="content-type" content="text/html" charset="UTF-8" />
+	<meta name="viewport" content="width=device-width" http-equiv="content-type" content="text/html" charset="UTF-8" />
 	
 	<!--Leaflet 1.0.2-->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -36,7 +36,7 @@
 	<script type="text/javascript" src="jquery/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="jquery/miniColors/jquery.minicolors.min.js"></script>
 	
-	<!--TR3-->
+	<!--TR3 ../TR3-min/TR3.debug.js https://terre3.es/API/TR3.js-->
 	<script type="text/javascript" src="https://terre3.es/API/TR3.js"></script>
 	
 	<!--Plugin Proj4Leaflet-->
@@ -108,21 +108,19 @@ function setTR3() {
 			}
 		}).then(
 			function(ori) {
-					/*var oriCtx = ori.getContext("2d");
-					//draw a red box
-					oriCtx.fillStyle="#FF0000";
-					oriCtx.fillRect(100,100,300,300);
-					var img = new Image;
-					img.src = ori.toDataURL();*/
 						
-					var bbox = map.getBounds();
-					var desty = document.getElementById('TR3');
-					
-					var c1_25830 = proj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ','+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs ', [ bbox.getWest(), bbox.getSouth() ]);
-					var c2_25830 = proj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ','+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs ', [ bbox.getEast(), bbox.getNorth() ]);
-					
-					TR3.setStart(ori, desty, [c1_25830[0],c1_25830[1],c2_25830[0],c2_25830[1]], 'EPSG:25830');
+				var bbox = map.getBounds();
+				var desty = document.getElementById('TR3');
 				
+				var c1_25830 = proj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ','+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs ', [ bbox.getWest(), bbox.getSouth() ]);
+				var c2_25830 = proj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ','+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs ', [ bbox.getEast(), bbox.getNorth() ]);
+				
+				var TR3pms = {	ori: ori, 
+								desty: desty, 
+								bbox: [c1_25830[0],c1_25830[1],c2_25830[0],c2_25830[1]], 
+								projCode: 'EPSG:25830'};
+		
+				TR3.setStart( TR3pms );
 			}
 		);
 	}, 1000);
