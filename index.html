@@ -41,7 +41,6 @@
 	
 	<!--Plugin Proj4Leaflet-->
 	<script type="text/javascript" src="proj4js/proj4-compressed.js"></script>
-    <script type="text/javascript" src="proj4js/proj4leaflet.js"></script>
 	
 	<!--html2canvas-->
 	<script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -54,39 +53,17 @@
 	<div id="tools" class="tools" ></div>
 	<script>
 		
-		// Obtención del CRS EPSG:25830.
-        var crs = new L.Proj.CRS('EPSG:25830',
-			 '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs ', //http://spatialreference.org/ref/epsg/25830/proj4/
-            {
-                resolutions: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5],
-				origin: [-1500000,5000000],
-				//resolutions: [13671.875,6835.9375,3417.96875,1708.984375,854.4921875,427.24609375,213.623046875,106.8115234375,53.40576171875,26.702880859375,13.3514404296875,6.67572021484375,3.337860107421875,1.6689300537109375,0.8344650268554688,0.4172325134277344,0.2086162567138672,0.1043081283569336,0.0521540641784668,0.0260770320892334,0.0130385160446167,0.00651925802230835,0.003259629011154175,0.0016298145055770874,0.0008149072527885437,0.00040745362639427185,0.00020372681319713593,0.00010186340659856796,0.00005093170329928398,0.00002546585164964199,0.000012732925824820995,0.000006366462912410498,0.000003183231456205249,0.0000015916157281026244,7.958078640513122e-7,3.979039320256561e-7,1.9895196601282805e-7,9.947598300641403e-8,4.973799150320701e-8,2.4868995751603507e-8,1.2434497875801753e-8,6.217248937900877e-9,3.1086244689504383e-9]
-
-            });
-		
 		var map = new L.map('map',{
-			crs: crs,
 			center: [40, -4],
-			zoom: 1
+			zoom: 6.5
 		}).on( 'moveend', setTR3 );
-
-		var layer = new L.tileLayer.wms("http://www.ign.es/wms-inspire/mapa-raster",{
-			layers: 'mtn_rasterizado',
-			crs: crs,
-			format: 'image/jpeg',
-			crossOrigin: 'anonymous',
-			continuousWorld: true,
-			attribution: '© Instituto Geográfico Nacional de España'
-		}).addTo(map).on( 'load', setTR3 );
 		
 
-		/*var layer = new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			//maxZoom: 18,
-			//crs: crs,
+		var layer = new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			continuousWorld: true,
 			crossOrigin: 'anonymous',
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
-		}).addTo(map).on('load',setTR3);*/
+		}).addTo(map).on('load',setTR3);
 		
 		TR3.setLoader( 'TR3-min/' );
 		document.getElementById('tools').innerHTML = TR3.setPanel();
@@ -111,14 +88,15 @@ function setTR3() {
 						
 				var bbox = map.getBounds();
 				var desty = document.getElementById('TR3');
+				var crsID = 'EPSG:3785';
 				
-				var c1_25830 = proj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ','+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs ', [ bbox.getWest(), bbox.getSouth() ]);
-				var c2_25830 = proj4('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ','+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs ', [ bbox.getEast(), bbox.getNorth() ]);
+				var c1_25830 = proj4(proj4.defs('EPSG:4326'),proj4.defs( crsID ), [ bbox.getWest(), bbox.getSouth() ]);
+				var c2_25830 = proj4(proj4.defs('EPSG:4326'),proj4.defs( crsID ), [ bbox.getEast(), bbox.getNorth() ]);
 				
 				var TR3pms = {	ori: ori, 
 								desty: desty, 
 								bbox: [c1_25830[0],c1_25830[1],c2_25830[0],c2_25830[1]], 
-								projCode: 'EPSG:25830'};
+								projCode: crsID};
 		
 				TR3.setStart( TR3pms );
 			}
