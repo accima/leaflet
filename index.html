@@ -88,7 +88,7 @@ function setTR3() {
 						
 				var bbox = map.getBounds();
 				var desty = document.getElementById('TR3');
-				var crsID = 'EPSG:3785';
+				var crsID = 'EPSG:3857';
 				
 				var c1_25830 = proj4(proj4.defs('EPSG:4326'),proj4.defs( crsID ), [ bbox.getWest(), bbox.getSouth() ]);
 				var c2_25830 = proj4(proj4.defs('EPSG:4326'),proj4.defs( crsID ), [ bbox.getEast(), bbox.getNorth() ]);
